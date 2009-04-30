@@ -8,6 +8,31 @@ def pre(str='', &block)
   puts '<pre>' + CGI.escapeHTML(val) + '</pre>'
 end
 
-require File.dirname(__FILE__) + '/../lib/nakajima_tracker'
+$LOAD_PATH << File.join(File.dirname(__FILE__), *%w[.. lib nakajima])
 
-Spec::Runner.configure { |c| c.mock_with(:rr) }
+require File.dirname(__FILE__) + '/../lib/nakajima-tracker'
+
+Spec::Runner.configure { |c|
+  c.mock_with(:rr)
+  c.include(Module.new {
+    def new_tracker
+      Nakajima::Tracker.new
+    end
+
+    def new_project(name='client-a')
+      Nakajima::Project.new(name)
+    end
+
+    def new_session(description='')
+      Nakajima::Session.new(description)
+    end
+  })
+  
+  c.before(:each) do
+    FileUtils.rm(ENV['HOME'] + "/.client-a.nkt") rescue nil
+  end
+
+  c.after(:all) do
+    FileUtils.rm(ENV['HOME'] + "/.client-a.nkt") rescue nil
+  end
+}
