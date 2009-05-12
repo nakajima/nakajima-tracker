@@ -7,7 +7,7 @@ describe Nakajima::Project do
     end
 
     it "has file path" do
-      new_project('client-a').filepath.should == ENV['HOME'] + '/.client-a.nkt'
+      new_project('client-a').filepath.should == File.join(ENV['HOME'], '.client-a.nkt')
     end
 
     it "saves to .project-name" do
